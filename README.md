@@ -1,0 +1,2 @@
+# num_qrcode_generater
+半角数字の情報を格納したQRコードを作成するツールです。

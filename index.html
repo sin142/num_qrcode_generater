@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRコード生成ツール</title>
+    
+    <style>
+        /* [変更点] スクロール無効化 */
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        /* ページ全体の基本設定 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            /* [変更点] 高さを固定し、中央寄せ */
+            display: grid;
+            place-items: center;
+            box-sizing: border-box; /* paddingを含めて高さを計算 */
+        }
+
+        /* ツール全体のコンテナ */
+        .container {
+            background-color: #ffffff;
+            width: 90%;
+            max-width: 400px; /* PCでも見やすい最大幅 */
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        /* 入力フィールド */
+        #text-input {
+            width: 100%;
+            padding: 14px;
+            font-size: 18px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box; /* paddingを含めて幅100%にする */
+            text-align: center;
+        }
+        
+        /* 入力フィールドのヒント文字 */
+        #text-input::placeholder {
+            color: #aaa;
+        }
+
+        /* QRコード表示エリア */
+        #qrcode-container {
+            width: 100%;
+            /* 1:1の正方形を維持する */
+            aspect-ratio: 1 / 1; 
+            margin: 25px auto 0;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            overflow: hidden; /* QRコードがはみ出ないように */
+        }
+
+        /* ライブラリが生成するimg/canvasをコンテナに合わせる */
+        #qrcode-container img,
+        #qrcode-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+            padding: 16px; /* QRコードの周囲に余白を持たせる */
+            box-sizing: border-box; /* paddingを含める */
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+</head>
+<body>
+
+    <div class="container">
+        <h1>QRコード生成ツール</h1>
+        
+        <input type="text" 
+               id="text-input" 
+               inputmode="numeric" 
+               pattern="[0-9]*"
+               placeholder="ここに半角数字を入力">
+
+        <div id="qrcode-container">
+            </div>
+    </div>
+
+    <script>
+        // ページの読み込みが完了したら実行
+        window.onload = function() {
+            // 必要なHTML要素を取得
+            const input = document.getElementById('text-input');
+            const qrContainer = document.getElementById('qrcode-container');
+
+            // QRコードを生成する関数
+            function generateQR(text) {
+                // 1. 描画エリアを一旦空にする（古いQRコードを消す）
+                qrContainer.innerHTML = '';
+
+                // 2. 入力されたテキストが空でなければ、新しいQRコードを生成
+                if (text) {
+                    new QRCode(qrContainer, {
+                        text: text,
+                        width: 256, // CSSでリサイズされるため解像度として指定
+                        height: 256,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H // エラー訂正レベル
+                    });
+                }
+            }
+
+            // 入力フィールドに文字が入力されるたび（inputイベント）に実行
+            input.addEventListener('input', function() {
+                generateQR(input.value);
+            });
+
+            // ページ読み込み時に、空のQRコード（実際は何も表示されない）を
+            // 生成する処理を一度呼び出し、初期化する
+            generateQR(''); 
+        };
+    </script>
+    </body>
+</html>
